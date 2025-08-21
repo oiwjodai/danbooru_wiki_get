@@ -39,4 +39,4 @@ jobs:
 
       # 5. Pythonスクリプトを実行する
       - name: Run script
-        run: python your_script_name.py # ここを実際のスクリプトファイル名に変更してください
+        run: python main.py
