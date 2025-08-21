@@ -1,0 +1,42 @@
+# .github/workflows/main.yml
+
+name: Run Python Script Daily
+
+# スクリプトを実行するトリガー（きっかけ）を設定
+on:
+  workflow_dispatch: # 手動実行も可能にする
+  schedule:
+    # 毎日午前9時 (UTC) に実行する (日本時間だと午後6時)
+    # 実行時間は必要に応じて変更してください
+    # 分 時 日 月 曜日 (詳しくは 'cron' で検索)
+    - cron: '0 9 * * *' 
+
+jobs:
+  build:
+    runs-on: ubuntu-latest # 実行環境としてUbuntuの最新版を使用
+
+    steps:
+      # 1. リポジトリのコードをチェックアウトする
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2. Pythonの環境をセットアップする
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11' # 使用するPythonのバージョン
+
+      # 3. 依存ライブラリをインストールする
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      # 4. GitHub Secretsから認証情報JSONファイルを作成する
+      - name: Create Google Service Account JSON
+        run: echo "${{ secrets.GCP_SA_KEY }}" > service-account-key.json
+        # ここで `service-account-key.json` という名前の一時ファイルが作成される
+
+      # 5. Pythonスクリプトを実行する
+      - name: Run script
+        run: python your_script_name.py # ここを実際のスクリプトファイル名に変更してください
