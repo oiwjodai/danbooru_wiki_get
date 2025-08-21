@@ -4,6 +4,7 @@ from bs4 import BeautifulSoup
 import gspread
 import time
 import os
+import json
 
 # --- 設定 ---
 # GoogleサービスアカウントのJSONキーファイルへのパス (ワークフローで作成されるファイル名)
@@ -27,19 +28,21 @@ LIMIT_TAGS_TO_PROCESS = 1000 # <-- ここを調整してください (例: 100, 
 
 # --- Googleスプレッドシート認証 ---
 try:
-    # SERVICE_ACCOUNT_JSON_PATH の部分
-    json_path = SERVICE_ACCOUNT_JSON_PATH
-
-    # CSV_FILE_PATH の部分
-    csv_path = CSV_FILE_PATH
-        
-    gc = gspread.service_account(filename=json_path)
+    # 環境変数からJSONキーの「中身（文字列）」を取得します
+    key_content_string = os.environ['GCP_SA_KEY_CONTENT']
+    
+    # 文字列をPythonの辞書（dictionary）形式に変換します
+    credentials_dict = json.loads(key_content_string)
+    
+    # 辞書形式の認証情報を使って接続します
+    gc = gspread.service_account_from_dict(credentials_dict)
+    
     spreadsheet = gc.open(GOOGLE_SHEET_NAME)
     worksheet = spreadsheet.worksheet(WORKSHEET_NAME)
     print("✅ Googleスプレッドシートに接続しました。")
 except Exception as e:
     print(f"❌ Googleスプレッドシートへの接続エラー: {e}")
-    raise e 
+    raise e
 
 # --- 関数定義 ---
 
