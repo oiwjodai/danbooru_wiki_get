@@ -28,13 +28,8 @@ LIMIT_TAGS_TO_PROCESS = 1000 # <-- ここを調整してください (例: 100, 
 
 # --- Googleスプレッドシート認証 ---
 try:
-    # 環境変数からJSONキーの「中身（文字列）」を取得します
     key_content_string = os.environ['GCP_SA_KEY_CONTENT']
-    
-    # 文字列をPythonの辞書（dictionary）形式に変換します
     credentials_dict = json.loads(key_content_string)
-    
-    # 辞書形式の認証情報を使って接続します
     gc = gspread.service_account_from_dict(credentials_dict)
     
     spreadsheet = gc.open(GOOGLE_SHEET_NAME)
